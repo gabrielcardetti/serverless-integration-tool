@@ -1,0 +1,22 @@
+org: gabicardetti
+app: basecamp
+service: basecamp
+
+provider:
+  name: aws
+  runtime: nodejs10.x
+  stage: dev
+  region: us-east-1
+
+# you can define service wide environment variables here
+#  environment:
+#    variable1: value1
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+     - http:
+        path: basecamp
+        method: post
+        cors: true
