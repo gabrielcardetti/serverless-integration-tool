@@ -1,36 +1,9 @@
 'use strict'
-
-const apiKey = 'KEY'
-const oauthToken = 'KEY'
-var trelloNode = require('trello-node-api')(apiKey, oauthToken)
-
-const boardRequest = (boardId) => {
-  trelloNode.board.search(boardId).then(function (response) {
-    console.log('response from boardREquest', response)
-  }).catch(function (error) {
-    console.log('error from boardREquest', error)
-  })
-}
-
-const cardRequest = (boardId) => {
-  trelloNode.board.searchCards(boardId).then(function (response) {
-    console.log('response from cardRequest', response)
-  }).catch(function (error) {
-    console.log('error from cardRequest', error)
-  })
-}
-
-const createCardTrello = (data) => {
-  trelloNode.card.create(data).then(function (response) {
-    console.log('response from Create card', response)
-  }).catch(function (error) {
-    console.log('error', error)
-  })
-}
+import { createCardTrello } from './trello'
 
 const idList = '5d1a50166414ae44408e1785'
 
-module.exports.hello = (event, context, callback) => {
+export function hello (event, context, callback) {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
