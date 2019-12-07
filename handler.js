@@ -5,7 +5,7 @@ import { createRelation } from './db'
 
 const idList = '5d1a50166414ae44408e1785'
 
-export function hello(event, context, callback) {
+export function hello (event, context, callback) {
   const response = {
     statusCode: 200,
     body: JSON.stringify({

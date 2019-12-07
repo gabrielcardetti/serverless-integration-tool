@@ -1,5 +1,6 @@
-const apiKey = '4fab500509f07fd8d891d347058e586e'
-const oauthToken = '1458f9759a2fab5e23f13d9658eba505099d020d762278ec4bc673f828bdf346'
+const apiKey = process.env.APIKEY
+const oauthToken = process.env.OAUTHTOKEN
+
 var trelloNode = require('trello-node-api')(apiKey, oauthToken)
 
 export function boardRequest (boardId) {

@@ -8,3 +8,5 @@ package-lock.json
 .serverless
 
 data-test
+
+.env
