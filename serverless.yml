@@ -20,3 +20,13 @@ functions:
         path: basecamp
         method: post
         cors: true
+
+plugins:
+  - serverless-webpack
+
+# serverless-webpack configuration
+# Enable auto-packing of external modules
+custom:
+  webpack:
+    webpackConfig: ./webpack.config.js 
+    # includeModules: true
