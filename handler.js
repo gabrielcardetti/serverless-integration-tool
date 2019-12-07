@@ -1,9 +1,11 @@
 'use strict'
 import { createCardTrello } from './trello'
 
+import { createRelation } from './db'
+
 const idList = '5d1a50166414ae44408e1785'
 
-export function hello (event, context, callback) {
+export function hello(event, context, callback) {
   const response = {
     statusCode: 200,
     body: JSON.stringify({
@@ -45,20 +47,31 @@ const todoCompleted = () => {
 const todoUncompleted = () => {
   console.log('TODO UNCOMPLETE')
 }
-const todoCreated = async (body) => {
+
+async function todoCreated (body) {
   const title = body.recording.title
   const urlCardBaseCamp = body.recording.app_url
   const creatorName = body.creator.name + ' '
   // const creatorEmail = body.creator.email_address
   const descripcion = `Url de la card en basecamp ${urlCardBaseCamp} \n creada por ${creatorName}`
-  const data = {
+  const dataForCardTrello = {
     name: title,
     desc: descripcion,
     pos: 'top',
     idList: idList
   }
-  console.log(data, 'DATA FOR CREATE CARD')
-  createCardTrello(data)
+  const cardTrello = await createCardTrello(dataForCardTrello)
+  const relation = {
+    titleCard: title,
+    baseCampCardId: String(body.recording.id),
+    baseCampProjectId: String(body.recording.bucket.id),
+    trelloCardId: cardTrello.id,
+    trelloBoardId: cardTrello.idBoard,
+    trelloIdList: cardTrello.idList,
+    trelloShortLink: cardTrello.shortLink,
+    deleted: false
+  }
+  createRelation(relation)
 }
 
 const todoDeleted = () => {

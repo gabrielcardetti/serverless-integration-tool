@@ -1,11 +1,11 @@
-const apiKey = 'KEY'
-const oauthToken = 'KEY'
+const apiKey = '4fab500509f07fd8d891d347058e586e'
+const oauthToken = '1458f9759a2fab5e23f13d9658eba505099d020d762278ec4bc673f828bdf346'
 var trelloNode = require('trello-node-api')(apiKey, oauthToken)
 
 export function boardRequest (boardId) {
   trelloNode.board.search(boardId).then(function (response) {
     console.log('response from boardREquest', response)
-  }).catch(function (error) {
+  }).catch((error) => {
     console.log('error from boardREquest', error)
   })
 }
@@ -19,9 +19,14 @@ export function cardRequest (boardId) {
 }
 
 export function createCardTrello (data) {
-  trelloNode.card.create(data).then(function (response) {
-    console.log('response from Create card', response)
-  }).catch(function (error) {
-    console.log('error', error)
+  var promise = new Promise(function (resolve, reject) {
+    trelloNode.card.create(data).then(function (response) {
+      console.log('response from Create card', response)
+      resolve(response)
+    }).catch(function (error) {
+      console.log('error', error)
+      reject(error)
+    })
   })
+  return promise
 }
