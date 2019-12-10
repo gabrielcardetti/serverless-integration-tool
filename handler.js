@@ -1,8 +1,9 @@
 'use strict'
 import { createCardTrello } from './trello'
 
-import { createRelation, getRelationBy } from './db'
+import { createRelation, getRelationBy, updateRelation } from './db'
 
+// TODO: move this
 const idList = '5d1a50166414ae44408e1785'
 
 export function hello (event, context, callback) {
@@ -21,7 +22,7 @@ export function hello (event, context, callback) {
       todoCompleted(body)
       break
     case 'todo_uncompleted':
-      todoUncompleted()
+      todoUncompleted(body)
       break
     case 'todo_created':
       todoCreated(body)
@@ -35,30 +36,41 @@ export function hello (event, context, callback) {
     case 'todo_archived':
       todoArchived()
       break
+    case 'get_item':
+      getItem(body)
+      break
     default:
   }
   callback(null, response)
 }
 
+const getItem = async (body) => {
+  const item = await getRelationBy(getSpecificationFromBody(body))
+  console.log(item)
+}
+
+const getSpecificationFromBody = (body) => {
+  const specification = {
+    titleCard: body.recording.title,
+    baseCampCardId: String(body.recording.id),
+    baseCampProjectId: String(body.recording.bucket.id)
+  }
+  return specification
+}
+
 const todoCompleted = async (body) => {
   console.log('TODO COMPLETE')
-  // console.log(body)
-  const titleCard = body.recording.title
-  const baseCampCardId = String(body.recording.id)
-  const baseCampProjectId = String(body.recording.bucket.id)
-  const specification = {
-    titleCard,
-    baseCampCardId,
-    baseCampProjectId
-  }
-  const data = await getRelationBy(specification)
-  console.log(data, 'DATAA')
-
+  const specification = getSpecificationFromBody(body)
+  const update = await updateRelation(specification, { completed: true })
+  console.log(update)
   // cardCompleted(data, 'basecamp')
 }
 
-const todoUncompleted = () => {
+const todoUncompleted = async (body) => {
   console.log('TODO UNCOMPLETE')
+  const specification = getSpecificationFromBody(body)
+  const update = await updateRelation(specification, { completed: false })
+  console.log(update)
 }
 
 async function todoCreated (body) {

@@ -30,6 +30,8 @@ export async function createRelation (data) {
 
 export function getRelationBy (specification) { return Relation.get({ ...specification }) }
 
+export function updateRelation (specification, options) { return Relation.update(specification, { $PUT: { ...options } }) }
+
 export function getCompletedTrue () { return Relation.get({ completed: true }) }
 
 export function getUserById (id) { return Relation.queryOne('id').eq(id).exec() }
