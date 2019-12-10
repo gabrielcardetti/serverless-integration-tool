@@ -1,7 +1,7 @@
 'use strict'
 import { createCardTrello } from './trello'
 
-import { createRelation } from './db'
+import { createRelation, getRelationBy } from './db'
 
 const idList = '5d1a50166414ae44408e1785'
 
@@ -18,7 +18,7 @@ export function hello (event, context, callback) {
 
   switch (body.kind) {
     case 'todo_completed':
-      todoCompleted()
+      todoCompleted(body)
       break
     case 'todo_uncompleted':
       todoUncompleted()
@@ -40,8 +40,21 @@ export function hello (event, context, callback) {
   callback(null, response)
 }
 
-const todoCompleted = () => {
+const todoCompleted = async (body) => {
   console.log('TODO COMPLETE')
+  // console.log(body)
+  const titleCard = body.recording.title
+  const baseCampCardId = String(body.recording.id)
+  const baseCampProjectId = String(body.recording.bucket.id)
+  const specification = {
+    titleCard,
+    baseCampCardId,
+    baseCampProjectId
+  }
+  const data = await getRelationBy(specification)
+  console.log(data, 'DATAA')
+
+  // cardCompleted(data, 'basecamp')
 }
 
 const todoUncompleted = () => {
@@ -69,8 +82,10 @@ async function todoCreated (body) {
     trelloBoardId: cardTrello.idBoard,
     trelloIdList: cardTrello.idList,
     trelloShortLink: cardTrello.shortLink,
-    deleted: false
+    deleted: false,
+    completed: false
   }
+  // createRelation(relation, 'basecamp')
   createRelation(relation)
 }
 

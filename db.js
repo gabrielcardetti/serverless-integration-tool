@@ -1,33 +1,35 @@
+import dynamoose from 'dynamoose'
 
-const AWS = require('aws-sdk')
-const crypto = require('crypto')
+dynamoose.AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: 'us-east-1'
+})
 
-// Generate unique id with no external dependencies
-const generateUUID = () => crypto.randomBytes(16).toString('hex')
+const Schema = dynamoose.Schema
 
-// Initialising the DynamoDB SDK
-const documentClient = new AWS.DynamoDB.DocumentClient()
+const relationSchema = new Schema({
+  titleCard: { type: String },
+  baseCampCardId: { type: String },
+  baseCampProjectId: { type: String },
+  trelloCardId: { type: String },
+  trelloBoardId: { type: String },
+  trelloIdList: { type: String },
+  trelloShortLink: { type: String },
+  deleted: { type: Boolean },
+  completed: { type: Boolean }
 
-export async function createRelation (relation) {
-  const params = {
-    TableName: 'basecamp', // The name of your DynamoDB table
-    Item: { // Creating an Item with a unique id and with the passed title
-      relationId: generateUUID(),
-      ...relation
-    }
-  }
-  try {
-    // Utilising the put method to insert an item into the table (https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GettingStarted.NodeJs.03.html#GettingStarted.NodeJs.03.01)
-    const data = await documentClient.put(params).promise()
-    const response = {
-      statusCode: 200,
-      body: data
-    }
-    return response // Returning a 200 if the item has been inserted
-  } catch (e) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify(e)
-    }
-  }
+})
+
+const Relation = dynamoose.model('relation', relationSchema)
+
+export async function createRelation (data) {
+  const relation = new Relation({ ...data }, { useNativeBooleans: true })
+  return relation.save({ overwrite: false })
 }
+
+export function getRelationBy (specification) { return Relation.get({ ...specification }) }
+
+export function getCompletedTrue () { return Relation.get({ completed: true }) }
+
+export function getUserById (id) { return Relation.queryOne('id').eq(id).exec() }
