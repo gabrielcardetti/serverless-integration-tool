@@ -7,6 +7,4 @@ package-lock.json
 # Serverless directories
 .serverless
 
-data-test
-
 .env
