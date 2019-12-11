@@ -2,6 +2,7 @@
 import { createCardTrello } from './trello'
 
 import { createRelation, getRelationBy, updateRelation } from './db'
+import { ImportExport } from 'aws-sdk';
 
 // TODO: move this
 const idList = '5d1a50166414ae44408e1785'
@@ -28,13 +29,13 @@ export function hello (event, context, callback) {
       todoCreated(body)
       break
     case 'todo_trashed':
-      todoDeleted()
+      todoDeleted(body)
       break
     case 'todo_unarchived':
-      todoUnarchived()
+      todoUnarchived(body)
       break
     case 'todo_archived':
-      todoArchived()
+      todoArchived(body)
       break
     case 'get_item':
       getItem(body)
@@ -46,7 +47,8 @@ export function hello (event, context, callback) {
 
 const getItem = async (body) => {
   const item = await getRelationBy(getSpecificationFromBody(body))
-  console.log(item)
+  console.log(item, 'ITEM FROM GET ITEM')
+  return item
 }
 
 const getSpecificationFromBody = (body) => {
@@ -74,6 +76,11 @@ const todoUncompleted = async (body) => {
 }
 
 async function todoCreated (body) {
+  const item = await getItem(body)
+  if (item !== undefined) {
+    console.log('La relacion ya existe')
+    return
+  }
   const title = body.recording.title
   const urlCardBaseCamp = body.recording.app_url
   const creatorName = body.creator.name + ' '
@@ -95,19 +102,28 @@ async function todoCreated (body) {
     trelloIdList: cardTrello.idList,
     trelloShortLink: cardTrello.shortLink,
     deleted: false,
-    completed: false
+    completed: false,
+    archived: false
   }
-  // createRelation(relation, 'basecamp')
   createRelation(relation)
 }
 
-const todoDeleted = () => {
+const todoDeleted = async (body) => {
   console.log('TODO DELETED')
+  const specification = getSpecificationFromBody(body)
+  const update = await updateRelation(specification, { deleted: true })
+  console.log(update)
 }
-const todoUnarchived = () => {
+const todoUnarchived = async (body) => {
   console.log('TODO UNARCHIVED')
+  const specification = getSpecificationFromBody(body)
+  const update = await updateRelation(specification, { archived: false })
+  console.log(update)
 }
 
-const todoArchived = () => {
+const todoArchived = async (body) => {
   console.log('TODO ARCHIVED')
+  const specification = getSpecificationFromBody(body)
+  const update = await updateRelation(specification, { archived: true })
+  console.log(update)
 }

@@ -17,7 +17,8 @@ const relationSchema = new Schema({
   trelloIdList: { type: String },
   trelloShortLink: { type: String },
   deleted: { type: Boolean },
-  completed: { type: Boolean }
+  completed: { type: Boolean },
+  archived: { type: Boolean }
 
 })
 

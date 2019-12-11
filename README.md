@@ -1,8 +1,6 @@
 https://github.com/bhushankumarl/trello-node-api        
 
-
-https://github.com/request/request-promise#readme       
-
+https://github.com/dynamoosejs/dynamoose/    
 
 You should create a file .env with this variables      
 
