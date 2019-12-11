@@ -1,8 +1,7 @@
 'use strict'
-import { createCardTrello } from './trello'
+import { createCardTrello, searchCardTrello } from './trello'
 
 import { createRelation, getRelationBy, updateRelation } from './db'
-import { ImportExport } from 'aws-sdk';
 
 // TODO: move this
 const idList = '5d1a50166414ae44408e1785'
@@ -38,45 +37,37 @@ export function hello (event, context, callback) {
       todoArchived(body)
       break
     case 'get_item':
-      getItem(body)
+      getRelation(body)
       break
     default:
   }
   callback(null, response)
 }
 
-const getItem = async (body) => {
-  const item = await getRelationBy(getSpecificationFromBody(body))
+const getRelation = async (body) => {
+  const baseCampCardId = String(body.recording.id)
+  const item = await getRelationBy({ baseCampCardId })
   console.log(item, 'ITEM FROM GET ITEM')
   return item
 }
 
-const getSpecificationFromBody = (body) => {
-  const specification = {
-    titleCard: body.recording.title,
-    baseCampCardId: String(body.recording.id),
-    baseCampProjectId: String(body.recording.bucket.id)
-  }
-  return specification
-}
-
 const todoCompleted = async (body) => {
   console.log('TODO COMPLETE')
-  const specification = getSpecificationFromBody(body)
-  const update = await updateRelation(specification, { completed: true })
+  const baseCampCardId = String(body.recording.id)
+  const update = await updateRelation({ baseCampCardId }, { completed: true })
   console.log(update)
   // cardCompleted(data, 'basecamp')
 }
 
 const todoUncompleted = async (body) => {
   console.log('TODO UNCOMPLETE')
-  const specification = getSpecificationFromBody(body)
-  const update = await updateRelation(specification, { completed: false })
+  const baseCampCardId = String(body.recording.id)
+  const update = await updateRelation({ baseCampCardId }, { completed: false })
   console.log(update)
 }
 
 async function todoCreated (body) {
-  const item = await getItem(body)
+  const item = await getRelation(body)
   if (item !== undefined) {
     console.log('La relacion ya existe')
     return
@@ -94,7 +85,6 @@ async function todoCreated (body) {
   }
   const cardTrello = await createCardTrello(dataForCardTrello)
   const relation = {
-    titleCard: title,
     baseCampCardId: String(body.recording.id),
     baseCampProjectId: String(body.recording.bucket.id),
     trelloCardId: cardTrello.id,
@@ -110,20 +100,20 @@ async function todoCreated (body) {
 
 const todoDeleted = async (body) => {
   console.log('TODO DELETED')
-  const specification = getSpecificationFromBody(body)
-  const update = await updateRelation(specification, { deleted: true })
+  const baseCampCardId = String(body.recording.id)
+  const update = await updateRelation({ baseCampCardId }, { deleted: true })
   console.log(update)
 }
 const todoUnarchived = async (body) => {
   console.log('TODO UNARCHIVED')
-  const specification = getSpecificationFromBody(body)
-  const update = await updateRelation(specification, { archived: false })
+  const baseCampCardId = String(body.recording.id)
+  const update = await updateRelation({ baseCampCardId }, { archived: false })
   console.log(update)
 }
 
 const todoArchived = async (body) => {
   console.log('TODO ARCHIVED')
-  const specification = getSpecificationFromBody(body)
-  const update = await updateRelation(specification, { archived: true })
+  const baseCampCardId = String(body.recording.id)
+  const update = await updateRelation({ baseCampCardId }, { archived: true })
   console.log(update)
 }

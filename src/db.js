@@ -9,8 +9,10 @@ dynamoose.AWS.config.update({
 const Schema = dynamoose.Schema
 
 const relationSchema = new Schema({
-  titleCard: { type: String },
-  baseCampCardId: { type: String },
+  baseCampCardId: {
+    type: String,
+    hashKey: true
+  },
   baseCampProjectId: { type: String },
   trelloCardId: { type: String },
   trelloBoardId: { type: String },
