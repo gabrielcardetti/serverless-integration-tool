@@ -11,16 +11,34 @@ export function boardRequest (boardId) {
   })
 }
 
-export function cardRequest (boardId) {
-  trelloNode.board.searchCards(boardId).then(function (response) {
-    console.log('response from cardRequest', response)
-  }).catch(function (error) {
-    console.log('error from cardRequest', error)
+export function searchCardTrello (data) {
+  return new Promise(function (resolve, reject) {
+    trelloNode.card.search(data).then(function (response) {
+      console.log('response from search card', response)
+      resolve(response)
+    }).catch(function (error) {
+      console.log('error', error)
+      reject(error)
+    })
+  })
+}
+
+export function updateCardTrello (data) {
+  const { id, name } = data
+  console.log(data, 'DATAAAAAA')
+  return new Promise(function (resolve, reject) {
+    trelloNode.card.update(id, { name }).then(function (response) {
+      console.log('response from search card', response)
+      resolve(response)
+    }).catch(function (error) {
+      console.log('error', error)
+      reject(error)
+    })
   })
 }
 
 export function createCardTrello (data) {
-  var promise = new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     trelloNode.card.create(data).then(function (response) {
       console.log('response from Create card', response)
       resolve(response)
@@ -29,5 +47,4 @@ export function createCardTrello (data) {
       reject(error)
     })
   })
-  return promise
 }

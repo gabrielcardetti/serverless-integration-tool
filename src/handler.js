@@ -1,5 +1,5 @@
 'use strict'
-import { createCardTrello, searchCardTrello } from './trello'
+import { createCardTrello, searchCardTrello, updateCardTrello } from './trello'
 
 import { createRelation, getRelationBy, updateRelation } from './db'
 
@@ -39,6 +39,12 @@ export function hello (event, context, callback) {
     case 'get_item':
       getRelation(body)
       break
+    case 'todo_content_changed':
+      todoContentChangue(body)
+      break
+    case 'todo_description_changed':
+      todoDescriptionChangue(body)
+      break
     default:
   }
   callback(null, response)
@@ -47,7 +53,7 @@ export function hello (event, context, callback) {
 const getRelation = async (body) => {
   const baseCampCardId = String(body.recording.id)
   const item = await getRelationBy({ baseCampCardId })
-  console.log(item, 'ITEM FROM GET ITEM')
+  // console.log(item, 'ITEM FROM GET ITEM')
   return item
 }
 
@@ -116,4 +122,21 @@ const todoArchived = async (body) => {
   const baseCampCardId = String(body.recording.id)
   const update = await updateRelation({ baseCampCardId }, { archived: true })
   console.log(update)
+}
+
+const todoDescriptionChangue = async (body) => {
+  // when notes of a card is changue
+  console.log('TODO DESCRIPTION CHANGUE')
+  console.log(body, 'asdasdasbody')
+  const relation = await getRelation(body)
+  const cardTrello = searchCardTrello(relation.trelloCardId)
+  console.log(typeof (cardTrello))
+}
+
+const todoContentChangue = async (body) => {
+  // when title of a card is changue
+  console.log('TODO DESCRIPTION CHANGUE')
+  const relation = await getRelation(body)
+  const title = body.recording.title
+  updateCardTrello({ id: relation.trelloCardId, name: title })
 }
