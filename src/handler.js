@@ -1,7 +1,7 @@
 'use strict'
 import { createCardTrello, searchCardTrello, updateCardTrello } from './trello'
-
 import { createRelation, getRelationBy, updateRelation } from './db'
+import { getCardBaseCamp } from './basecamp'
 
 // TODO: move this
 const idList = '5d1a50166414ae44408e1785'
@@ -127,10 +127,11 @@ const todoArchived = async (body) => {
 const todoDescriptionChangue = async (body) => {
   // when notes of a card is changue
   console.log('TODO DESCRIPTION CHANGUE')
-  console.log(body, 'asdasdasbody')
   const relation = await getRelation(body)
-  const cardTrello = searchCardTrello(relation.trelloCardId)
-  console.log(typeof (cardTrello))
+  const baseCampCard = await getCardBaseCamp(relation)
+  const cardTrello = await searchCardTrello(relation.trelloCardId)
+  const newDescription = `${cardTrello.desc} \n ${baseCampCard.description.replace(/<[^>]*>/g, '')}`
+  updateCardTrello({ id: relation.trelloCardId, desc: newDescription })
 }
 
 const todoContentChangue = async (body) => {

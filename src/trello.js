@@ -11,9 +11,9 @@ export function boardRequest (boardId) {
   })
 }
 
-export function searchCardTrello (data) {
+export function searchCardTrello (cardId) {
   return new Promise(function (resolve, reject) {
-    trelloNode.card.search(data).then(function (response) {
+    trelloNode.card.search(cardId).then(function (response) {
       console.log('response from search card', response)
       resolve(response)
     }).catch(function (error) {
@@ -24,11 +24,10 @@ export function searchCardTrello (data) {
 }
 
 export function updateCardTrello (data) {
-  const { id, name } = data
-  console.log(data, 'DATAAAAAA')
+  const { id, ...spec } = data
   return new Promise(function (resolve, reject) {
-    trelloNode.card.update(id, { name }).then(function (response) {
-      console.log('response from search card', response)
+    trelloNode.card.update(id, spec).then(function (response) {
+      console.log('response from update', response)
       resolve(response)
     }).catch(function (error) {
       console.log('error', error)

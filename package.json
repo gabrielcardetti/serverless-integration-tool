@@ -23,6 +23,7 @@
     "source-map-support": "^0.5.16",
     "trello-node-api": "0.0.7",
     "webpack": "^4.41.2",
-    "webpack-node-externals": "^1.7.2"
+    "webpack-node-externals": "^1.7.2",
+    "xmlhttprequest": "^1.8.0"
   }
 }
